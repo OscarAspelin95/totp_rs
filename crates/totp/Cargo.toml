@@ -1,0 +1,17 @@
+[package]
+name = "totp"
+version = "0.0.1"
+edition = "2024"
+
+[dependencies]
+# ext. crates
+anyhow = { workspace = true }
+chrono = { workspace = true }
+dotenv = { workspace = true }
+hmac = { workspace = true }
+sha2 = { workspace = true }
+thiserror = { workspace = true }
+base32 = { workspace = true }
+rand = { workspace = true }
+# int. crates
+errors = { workspace = true }

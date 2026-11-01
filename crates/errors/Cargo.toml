@@ -1,0 +1,10 @@
+[package]
+name = "errors"
+version = "0.0.1"
+edition = "2024"
+
+[dependencies]
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+hmac = { workspace = true }
+chrono = { workspace = true }
