@@ -8,3 +8,4 @@ anyhow = { workspace = true }
 thiserror = { workspace = true }
 hmac = { workspace = true }
 chrono = { workspace = true }
+turso = { workspace = true }
