@@ -1,7 +1,8 @@
 mod route;
-use std::{collections::HashMap, sync::Arc};
+use route::{apps, authorize, health, new_app};
 
-use route::{authorize, health};
+mod state;
+use state::AppState;
 
 use axum::{
     Router,
@@ -9,12 +10,9 @@ use axum::{
 };
 use dotenv;
 use errors::AppError;
-use tokio::{self, sync::RwLock};
 use tower_http::trace::{DefaultMakeSpan, DefaultOnResponse, TraceLayer};
 use tracing::{Level, info};
 use tracing_subscriber::{self, EnvFilter};
-
-use crate::route::new_user;
 
 fn setup_logging() {
     tracing_subscriber::fmt()
@@ -25,26 +23,14 @@ fn setup_logging() {
         .init();
 }
 
-#[derive(Clone, Debug)]
-pub struct AppState {
-    db: Arc<RwLock<HashMap<String, String>>>,
-}
-
-impl AppState {
-    pub fn new() -> Self {
-        Self {
-            db: Arc::new(RwLock::new(HashMap::new())),
-        }
-    }
-}
-
 async fn run_server() -> Result<(), AppError> {
-    let app_state = AppState::new();
+    let app_state = AppState::new().await?;
 
     let router: Router<_> = Router::new()
         .route("/", get(health))
         .route("/auth", post(authorize))
-        .route("/new_user", post(new_user))
+        .route("/new_app", post(new_app))
+        .route("/apps", get(apps))
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(DefaultMakeSpan::new().level(Level::INFO))

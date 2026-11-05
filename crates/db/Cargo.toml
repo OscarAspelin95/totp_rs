@@ -9,6 +9,7 @@ tokio = { workspace = true }
 turso = { workspace = true }
 dotenv = { workspace = true }
 uuid = { workspace = true }
+serde = { workspace = true }
 # int. crates
 errors = { workspace = true }
 totp = { workspace = true }

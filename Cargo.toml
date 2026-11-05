@@ -25,9 +25,12 @@ rand = { version = "0.10.3" }
 uuid = { version = "*", features = ["v7", "serde"] }
 clap = { version = "*", features = ["derive"] }
 turso = { version = "*" }
+crossterm = "0.29.0"
+ratatui = "0.30.2"
 # int. crates
 errors = { version = "0.0.1", path = "crates/errors" }
 totp = { version = "0.0.1", path = "crates/totp" }
 server = { version = "0.0.1", path = "crates/server" }
 client = { version = "0.0.1", path = "crates/client" }
 db = { version = "0.0.1", path = "crates/db" }
+tui = { version = "0.0.1", path = "crates/tui" }

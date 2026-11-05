@@ -13,6 +13,8 @@ tracing = { workspace = true }
 serde = { workspace = true }
 tower-http = { workspace = true }
 uuid = { workspace = true }
+turso = { workspace = true }
 # int. crates
 errors = { workspace = true }
 totp = { workspace = true }
+db = { workspace = true }
