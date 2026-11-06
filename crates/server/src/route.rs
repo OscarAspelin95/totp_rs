@@ -1,4 +1,7 @@
-use crate::AppState;
+use crate::{
+    AppState,
+    custom::{GetAppsRequest, RequiresAuth},
+};
 use axum::{
     Json,
     extract::State,
@@ -90,7 +93,7 @@ pub async fn new_app(State(state): State<AppState>, Json(req): Json<NewAppReques
     let response = match insert_app(req.app_name, conn).await {
         Ok(response) => response,
         Err(e) => {
-            error!("{}", e.to_string());
+            info!("{}", e.to_string());
             return StatusCode::INTERNAL_SERVER_ERROR.into_response();
         }
     };
@@ -111,7 +114,10 @@ pub struct AppsResponse {
 }
 
 #[instrument]
-pub async fn apps(State(state): State<AppState>) -> Response {
+pub async fn apps(
+    State(state): State<AppState>,
+    RequiresAuth(req): RequiresAuth<GetAppsRequest>,
+) -> Response {
     let conn = match state.db.connect() {
         Ok(conn) => conn,
         Err(e) => {

@@ -4,6 +4,8 @@ use route::{apps, authorize, health, new_app};
 mod state;
 use state::AppState;
 
+mod custom;
+
 use axum::{
     Router,
     routing::{get, post},
