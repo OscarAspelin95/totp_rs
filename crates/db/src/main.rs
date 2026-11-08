@@ -1,4 +1,4 @@
-use db::crud::{create_table, insert_app};
+use db::crud::insert_app;
 use db::utils::get_db;
 
 use dotenv;
@@ -10,10 +10,8 @@ async fn main() -> Result<(), AppError> {
     dotenv::dotenv().ok();
 
     let db = get_db().await?;
-    let conn = db.connect()?;
 
-    let _ = create_table(&conn).await?;
-    let response = insert_app("MyApp".to_string(), &conn).await?;
+    let response = insert_app("MyApp1".to_string(), &db).await?;
 
     println!("{:?}", response);
 

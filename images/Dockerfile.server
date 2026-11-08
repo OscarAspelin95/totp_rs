@@ -4,6 +4,9 @@ WORKDIR /usr/src/app
 COPY Cargo.toml .
 COPY Cargo.lock .
 COPY crates ./crates
+# sqlx offline query cache, regenerate with `cargo sqlx prepare --workspace`
+COPY .sqlx ./.sqlx
+ENV SQLX_OFFLINE=true
 RUN cargo build --release -p server && cp ./target/release/server /usr/src/app/server && rm -r ./target/release/
 
 # --- runtime

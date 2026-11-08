@@ -1,0 +1,35 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        INSERT INTO apps\n            (app, secret)\n        VALUES\n            ($1, $2)\n        RETURNING\n            id, app, secret\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "app",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "secret",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "588bf7b9d6486e3385e6768185d0da597c52dd24c608fbdfee7b411193d910b9"
+}

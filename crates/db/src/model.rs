@@ -1,25 +1,27 @@
-use errors::AppError;
 use serde::{Deserialize, Serialize};
-use turso::Row;
+use sqlx::FromRow;
 use uuid::Uuid;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, FromRow)]
 pub struct InsertAppResponse {
     pub id: Uuid,
     pub app: String,
     pub secret: String,
 }
 
-impl TryFrom<Row> for InsertAppResponse {
-    type Error = AppError;
+#[derive(Serialize, Deserialize, Debug)]
+pub struct AuthRequest {
+    pub app_id: Uuid,
+    pub code: u32,
+}
 
-    fn try_from(row: Row) -> Result<Self, Self::Error> {
-        let parsed = Self {
-            id: Uuid::parse_str(&row.get::<String>(0)?).unwrap(),
-            app: row.get::<String>(1)?,
-            secret: row.get::<String>(2)?,
-        };
+#[derive(Serialize, Deserialize, Debug)]
+pub struct NewAppResponse {
+    pub app_id: Uuid,
+    pub secret: String,
+}
 
-        Ok(parsed)
-    }
+#[derive(Serialize, Deserialize, Debug)]
+pub struct NewAppRequest {
+    pub app_name: String,
 }

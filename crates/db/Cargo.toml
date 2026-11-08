@@ -6,10 +6,11 @@ edition = "2024"
 [dependencies]
 # ext. dependencies
 tokio = { workspace = true }
-turso = { workspace = true }
+sqlx = { workspace = true }
 dotenv = { workspace = true }
 uuid = { workspace = true }
 serde = { workspace = true }
+serde_json = { workspace = true }
 # int. crates
 errors = { workspace = true }
 totp = { workspace = true }

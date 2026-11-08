@@ -1,14 +1,15 @@
 use std::{array::TryFromSliceError, env::VarError};
 
 use hmac::digest::InvalidLength;
+use sqlx;
 use thiserror::Error;
 
 /// Rework this mod to avoid including big crates.
 #[derive(Error, Debug)]
 pub enum AppError {
-    #[error("")]
+    #[error("Invalid timestamp")]
     TimeStampError(String),
-    #[error("")]
+    #[error("Failed to truncate timestamp")]
     TimeStampTruncError(#[from] chrono::RoundingError),
     #[error("")]
     SliceError(#[from] TryFromSliceError),
@@ -25,7 +26,8 @@ pub enum AppError {
     //
     #[error("")]
     FileDoesNotExistError(String),
-    // turso
     #[error("")]
-    TursoError(#[from] turso::Error),
+    CrudError(String),
+    #[error("")]
+    SqlxError(#[from] sqlx::Error),
 }

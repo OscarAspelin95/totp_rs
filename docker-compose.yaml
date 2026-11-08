@@ -3,11 +3,40 @@ services:
     build:
       context: .
       dockerfile: ./images/Dockerfile.server
+    env_file:
+      - .env
+    # overwrite certain ENV variables
     environment:
-      - DB_PATH=/usr/data/turso.db
       - PORT=8080
       - ADDR=0.0.0.0
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     ports:
       - ${PORT}:${PORT}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
+
+    networks:
+      - docker_network
+
+  postgres:
+    image: postgres:18.1
+    container_name: postgres
+    env_file:
+      - ./.env
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
     volumes:
-      - ./data/db/turso.db:/usr/data/turso.db
+      - ./data/postgres:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - docker_network
+
+
+networks:
+  docker_network:

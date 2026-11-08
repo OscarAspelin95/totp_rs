@@ -8,36 +8,21 @@ use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
 };
-use db::{InsertAppResponse, get_app, get_apps, insert_app};
+use db::AuthRequest;
+use db::{InsertAppResponse, NewAppRequest, NewAppResponse, get_app, get_apps, insert_app};
 use serde::{Deserialize, Serialize};
 use totp::get_code;
 use tracing::{error, info, instrument};
-use uuid::Uuid;
 
 #[instrument]
 pub async fn health() -> impl IntoResponse {
     (StatusCode::OK, "healthy".to_string())
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct AuthRequest {
-    app_id: Uuid,
-    code: u32,
-}
-
 #[instrument]
 pub async fn authorize(State(state): State<AppState>, Json(req): Json<AuthRequest>) -> Response {
-    // db connection
-    let conn = match state.db.connect() {
-        Ok(conn) => conn,
-        Err(e) => {
-            error!("{}", e.to_string());
-            return StatusCode::INTERNAL_SERVER_ERROR.into_response();
-        }
-    };
-
     // db response
-    let response = match get_app(req.app_id, conn).await {
+    let response = match get_app(req.app_id, &state.db).await {
         Ok(response) => response,
         Err(e) => {
             error!("{}", e.to_string());
@@ -67,33 +52,12 @@ pub async fn authorize(State(state): State<AppState>, Json(req): Json<AuthReques
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct NewAppResponse {
-    app_id: Uuid,
-    secret: String,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct NewAppRequest {
-    app_name: String,
-}
-
 #[instrument]
 pub async fn new_app(State(state): State<AppState>, Json(req): Json<NewAppRequest>) -> Response {
-    info!("DB: {:?}", &state.db);
-
-    let conn = match state.db.connect() {
-        Ok(conn) => conn,
-        Err(e) => {
-            error!("{}", e.to_string());
-            return StatusCode::INTERNAL_SERVER_ERROR.into_response();
-        }
-    };
-
-    let response = match insert_app(req.app_name, conn).await {
+    let response = match insert_app(req.app_name, &state.db).await {
         Ok(response) => response,
         Err(e) => {
-            info!("{}", e.to_string());
+            error!(reason = e.to_string());
             return StatusCode::INTERNAL_SERVER_ERROR.into_response();
         }
     };
@@ -118,15 +82,7 @@ pub async fn apps(
     State(state): State<AppState>,
     RequiresAuth(req): RequiresAuth<GetAppsRequest>,
 ) -> Response {
-    let conn = match state.db.connect() {
-        Ok(conn) => conn,
-        Err(e) => {
-            error!("{}", e.to_string());
-            return StatusCode::INTERNAL_SERVER_ERROR.into_response();
-        }
-    };
-
-    let response = match get_apps(conn).await {
+    let response = match get_apps(&state.db).await {
         Ok(response) => response,
         Err(e) => {
             error!("{}", e.to_string());

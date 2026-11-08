@@ -1,10 +1,10 @@
 use db::get_db;
 use errors::AppError;
-use turso::Database;
+use sqlx::PgPool;
 
 #[derive(Clone, Debug)]
 pub struct AppState {
-    pub db: Database,
+    pub db: PgPool,
 }
 
 impl AppState {

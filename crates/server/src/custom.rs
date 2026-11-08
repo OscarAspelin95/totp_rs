@@ -27,9 +27,9 @@ where
             .and_then(|v| v.to_str().ok())
             .and_then(|h| h.strip_prefix("Bearer "));
 
-        let admin_pwd = match std::env::var("ADMIN_PASSWORD") {
+        let admin_pwd = match std::env::var("ADMIN_TOKEN") {
             Ok(admin_pwd) => admin_pwd,
-            Err(_) => return Err((StatusCode::INTERNAL_SERVER_ERROR, "admin password not set.")),
+            Err(_) => return Err((StatusCode::INTERNAL_SERVER_ERROR, "admin token not set.")),
         };
 
         match bearer_token {
