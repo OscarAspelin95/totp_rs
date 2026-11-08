@@ -1,0 +1,14 @@
+# --- build binary
+FROM rust:latest AS builder
+WORKDIR /usr/src/app
+COPY Cargo.toml .
+COPY Cargo.lock .
+COPY crates ./crates
+RUN cargo build --release -p server && cp ./target/release/server /usr/src/app/server && rm -r ./target/release/
+
+# --- runtime
+FROM debian:trixie-slim
+RUN apt-get update
+COPY --from=builder /usr/src/app/server .
+RUN chmod +x ./server
+ENTRYPOINT ["./server"]

@@ -1,0 +1,13 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: ./images/Dockerfile.server
+    environment:
+      - DB_PATH=/usr/data/turso.db
+      - PORT=8080
+      - ADDR=0.0.0.0
+    ports:
+      - ${PORT}:${PORT}
+    volumes:
+      - ./data/db/turso.db:/usr/data/turso.db
