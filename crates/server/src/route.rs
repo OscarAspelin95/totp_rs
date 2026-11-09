@@ -31,8 +31,8 @@ pub async fn authorize(State(state): State<AppState>, Json(req): Json<AuthReques
     };
 
     // secret -> code
-    let server_code = match get_code(response.secret.as_bytes()) {
-        Ok(server_code) => server_code,
+    let (server_code, seconds_left) = match get_code(response.secret.as_bytes()) {
+        Ok((server_code, seconds_left)) => (server_code, seconds_left)
         Err(e) => {
             error!("{}", e.to_string());
             return StatusCode::INTERNAL_SERVER_ERROR.into_response();

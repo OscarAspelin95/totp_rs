@@ -1,5 +1,7 @@
 # totp_rs
 
+Toy project for implementing time-based one time passwords used in 2-factor authentication.
+
 ## Requirements
 
 - Ubuntu

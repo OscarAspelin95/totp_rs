@@ -7,12 +7,18 @@ use sha2::Sha256;
 type HmacSha256 = Hmac<Sha256>;
 
 const NUM_DIGITS: u32 = 6;
+const EXPIRATION_TIME: u64 = 30;
 
-fn get_counter() -> Result<u64, AppError> {
-    let ts = Utc::now().timestamp();
+fn get_counter() -> Result<(u64, u64), AppError> {
+    let ts = Utc::now().timestamp() as u64;
 
-    u64::try_from(ts / 30)
-        .map_err(|_| AppError::TimeStampError(format!("Timestamp {ts} cannot be negative")))
+    let num_elapses = u64::try_from(ts / EXPIRATION_TIME)
+        .map_err(|_| AppError::TimeStampError(format!("Timestamp {ts} cannot be negative")))?;
+
+    let elapsed = ts.saturating_sub(EXPIRATION_TIME * num_elapses);
+    let seconds_left = EXPIRATION_TIME - elapsed;
+
+    Ok((num_elapses, seconds_left))
 }
 
 fn hash_counter(counter: u64, secret: &[u8]) -> Result<u32, AppError> {
@@ -27,8 +33,8 @@ fn hash_counter(counter: u64, secret: &[u8]) -> Result<u32, AppError> {
     Ok(bin % 10u32.pow(NUM_DIGITS))
 }
 
-pub fn get_code(secret: &[u8]) -> Result<u32, AppError> {
-    let timestamp = get_counter()?;
+pub fn get_code(secret: &[u8]) -> Result<(u32, u64), AppError> {
+    let (timestamp, seconds_left) = get_counter()?;
     let code = hash_counter(timestamp, secret)?;
-    Ok(code)
+    Ok((code, seconds_left))
 }

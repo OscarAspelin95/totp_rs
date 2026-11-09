@@ -3,6 +3,7 @@ name = "totp"
 version = "0.0.1"
 edition = "2024"
 
+
 [dependencies]
 # ext. crates
 anyhow = { workspace = true }
